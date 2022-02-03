@@ -5,6 +5,5 @@ import store from './store';
 
 import './assets/css/styles.css';
 import './assets/css/shoping_cart.css';
-import './assets/css/productos.css';
 
 createApp(App).use(store).use(router).mount('#app');

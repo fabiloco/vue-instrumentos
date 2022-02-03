@@ -4,20 +4,20 @@
 			<div class="nav__items">
 				<img src="../assets/img/logo.png" class="logo" />
 				<ul class="nav__btns">
-					<li><a href="/index.html">Inicio</a></li>
-					<li><a href="/products">Guitarras</a></li>
-					<li><a href="/products">Percusión</a></li>
-					<li><a href="/products">Bajos</a></li>
-					<li><a href="/products">Ukuleles</a></li>
-					<li><a href="/products">Teclados</a></li>
-					<li><a href="/products">Efectos</a></li>
+					<li><router-link to="/">Inicio</router-link></li>
+					<li><router-link to="/products">Guitarras</router-link></li>
+					<li><router-link to="/products">Percusión</router-link></li>
+					<li><router-link to="/products">Bajos</router-link></li>
+					<li><router-link to="/products">Ukuleles</router-link></li>
+					<li><router-link to="/products">Teclados</router-link></li>
+					<li><router-link to="/products">Efectos</router-link></li>
 				</ul>
 			</div>
 			<div class="nav__options">
 				<ul class="options__buttons">
 					<li>
 						<img src="../assets/icons/trolley.svg" />
-						<a href="/shopping_cart">Carro</a>
+						<router-link to="/shopping_cart">Carro</router-link>
 					</li>
 					<li>
 						<img src="../assets/icons/location.svg" />
@@ -29,7 +29,7 @@
 					</li>
 					<li id="login-btn">
 						<img src="../assets/icons/login.svg" />
-						<a href="./login.html">Login</a>
+						<router-link to="/login">Login</router-link>
 					</li>
 				</ul>
 				<div class="options__search">
@@ -57,18 +57,47 @@
 							</li>
 							<li class="nav-mobile__subtitle">Categorias</li>
 							<ul class="nav-mobile__categories">
-								<li><a href="/product">Guitarras</a></li>
-								<li><a href="/product">Percusión</a></li>
-								<li><a href="/product">Bajos</a></li>
-								<li><a href="/product">Ukuleles</a></li>
-								<li><a href="/product">Teclados</a></li>
-								<li><a href="/product">Efectos</a></li>
+								<li>
+									<router-link to="/">Inicio</router-link>
+								</li>
+								<li>
+									<router-link to="/products"
+										>Guitarras</router-link
+									>
+								</li>
+								<li>
+									<router-link to="/products"
+										>Percusión</router-link
+									>
+								</li>
+								<li>
+									<router-link to="/products"
+										>Bajos</router-link
+									>
+								</li>
+								<li>
+									<router-link to="/products"
+										>Ukuleles</router-link
+									>
+								</li>
+								<li>
+									<router-link to="/products"
+										>Teclados</router-link
+									>
+								</li>
+								<li>
+									<router-link to="/products"
+										>Efectos</router-link
+									>
+								</li>
 							</ul>
 							<li class="nav-mobile__subtitle">Optiones</li>
 							<ul class="nav-mobile__categories">
 								<li>
 									<img src="../assets/icons/trolley.svg" />
-									<a href="./shoping_cart.html">Carro</a>
+									<router-link to="/shopping_cart"
+										>Carro</router-link
+									>
 								</li>
 								<li>
 									<img src="../assets/icons/location.svg" />
@@ -78,9 +107,9 @@
 									<img src="../assets/icons/info.svg" />
 									<a href="javascript:void(0);">Info</a>
 								</li>
-								<li id="login-btn-mobile">
+								<li id="login-btn">
 									<img src="../assets/icons/login.svg" />
-									<a href="./login.html">Login</a>
+									<router-link to="/login">Login</router-link>
 								</li>
 							</ul>
 						</ul>

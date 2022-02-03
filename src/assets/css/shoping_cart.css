@@ -109,7 +109,7 @@
 }
 
 .product__info-item {
-    
+
 }
 .shopping-cart_summary{
     padding: 2rem;
@@ -160,7 +160,7 @@
 }
 
 .items_and_price p {
-    font-size: 1.2rem;  
+    font-size: 1.2rem;
 }
 
 .shopping_delivery {
@@ -303,7 +303,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.2rem;  
+    font-size: 1.2rem;
     width: 30px;
     height: 30px;
     border-left: 1px solid rgba(0, 0, 0, 0.3);
@@ -325,7 +325,7 @@
 }
 
 @media (max-width: 1440px) {
-  
+
 }
 
 @media (max-width: 1366px) {
@@ -345,7 +345,7 @@
         border-radius: 0;
         box-shadow: none;
     }
-    
+
     .shopping-cart__container {
         padding-top: 0;
         /* height: 100%; */
