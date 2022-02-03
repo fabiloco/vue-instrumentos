@@ -11,16 +11,18 @@
 			</div>
 			<div class="w-1/2 p-6 bg-white border rounded-sm border-slate-200">
 				<h2 id="product-name" class="text-3xl font-bold">
-					Nombre del producto
+					{{ product.name }}
 				</h2>
 				<div class="flex mt-3 mb-3">
-					<p id="product-sku" class="text-sm">SKU: 123123123</p>
+					<p id="product-sku" class="text-sm">
+						SKU: {{ product.sku }}
+					</p>
 				</div>
 				<hr />
 				<div class="mt-4">
 					<p class="mb-2 text-sm">Precio:</p>
 					<p id="product-price" class="text-2xl text-red-600">
-						$ 123123123
+						COP ${{ product.price }}
 					</p>
 				</div>
 				<div class="mt-4">
@@ -63,14 +65,27 @@
 					Detalles
 				</h2>
 				<hr class="mb-4" />
-				<p id="product-description" class="mb-4 text-md">Descripción</p>
-				<p id="product-weight" class="mb-4 text-sm">Peso: peso</p>
-				<p id="product-stock" class="mb-4 text-sm">Stock: peso</p>
+				<p id="product-description" class="mb-4 text-md">
+					{{ product.description }}
+				</p>
+				<p id="product-weight" class="mb-4 text-sm">
+					Peso: {{ product.weight }}
+				</p>
+				<p id="product-stock" class="mb-4 text-sm">
+					Stock: {{ product.stock }}
+				</p>
 				<h2 id="product-name" class="mb-2 text-3xl font-bold">
 					Más imagenes del producto
 				</h2>
 				<hr class="mb-4" />
-				<div class="flex flex-col gap-5" id="product-images"></div>
+				<div class="flex flex-col gap-5" id="product-images">
+					<img
+						v-for="(image, index) in product.image"
+						v-bind:key="index"
+						v-bind:src="`${API_URL}/${image.url}`"
+						v-bind:alt="`image ${image.id}`"
+					/>
+				</div>
 			</div>
 			<div class="w-1/2"></div>
 		</section>
@@ -79,6 +94,29 @@
 
 <script>
 import "../assets/css/productos.css";
+import { API_URL } from "../config/config";
+import { getProduct } from "../services/products.services";
 
-export default {};
+export default {
+	data() {
+		return {
+			API_URL,
+			loading: true,
+			product: {},
+		};
+	},
+
+	mounted() {
+		this.getData(this.$route.params.id);
+	},
+
+	methods: {
+		getData: async function (id) {
+			this.loading = true;
+			this.product = await getProduct(id);
+			console.log(this.product);
+			this.loading = false;
+		},
+	},
+};
 </script>

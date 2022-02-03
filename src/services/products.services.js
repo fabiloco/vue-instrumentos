@@ -8,7 +8,7 @@ export const getProducts = async (url = `${API_URL}/api/products`) => {
 };
 
 export const getProduct = async (id) => {
-	const res = await fetch(`${API_URL}/products/${id}`, {
+	const res = await fetch(`${API_URL}/api/products/${id}`, {
 		method: 'GET',
 		headers,
 	});

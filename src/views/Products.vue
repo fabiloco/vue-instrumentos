@@ -93,7 +93,7 @@
 						>
 							<router-link
 								class="w-full h-full"
-								v-bind:to="`/product/${product.slug}`"
+								v-bind:to="`/product/${product.id}`"
 							>
 								<img
 									v-bind:src="`${API_URL}/${product.image[0].url}`"
@@ -167,15 +167,18 @@ export default {
 			links: [],
 		};
 	},
-	async mounted() {
-		this.loading = true;
-		const { data, links } = await getProducts();
-		this.loading = false;
-		this.products = data;
-		this.links = links;
+	mounted() {
+		this.getData();
 	},
 
 	methods: {
+		getData: async function () {
+			this.loading = true;
+			const { data, links } = await getProducts();
+			this.loading = false;
+			this.products = data;
+			this.links = links;
+		},
 		changePage: async function (url) {
 			if (!url) return;
 			this.loading = true;
