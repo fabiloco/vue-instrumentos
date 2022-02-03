@@ -90,30 +90,41 @@
 							v-bind:key="index"
 						>
 							<a
-								class="h-full w-full"
+								class="w-full h-full"
 								href="${`/product#${element.id}`}"
 							>
 								<img
 									v-bind:src="`${API_URL}/${product.image[0].url}`"
-									class="product-img p-3 w-full h-2/3 object-contain"
+									class="object-contain w-full p-3 product-img h-2/3"
 									alt="${element.name}"
 								/>
 								<div
-									class="w-full h-1/3 flex flex-col justify-around p-4"
+									class="flex flex-col justify-around w-full p-4 h-1/3"
 								>
-									<h4 class="text-xl">${element.name}</h4>
-									<p class="text-lg">COP$ ${element.price}</p>
+									<h4 class="text-xl">{{ product.name }}</h4>
+									<p class="text-lg">
+										COP$ ${{ product.price }}
+									</p>
 									<div>
-										${element.stock > 0 ? `
 										<div class="flex items-center text-md">
-											<span
-												class="w-2 h-2 bg-green-500 inline-block rounded-full mr-2"
-											></span
-											><span class="text-green-500"
-												>Disponible</span
-											>
+											<div v-if="product.stock > 1">
+												<span
+													class="inline-block w-2 h-2 mr-2 bg-green-500 rounded-full"
+												></span>
+												<span class="text-green-500"
+													>Disponible</span
+												>
+											</div>
+
+											<div v-else>
+												<span
+													class="inline-block w-2 h-2 mr-2 bg-red-500 rounded-full"
+												></span>
+												<span class="text-red-500"
+													>No disponible</span
+												>
+											</div>
 										</div>
-										` : 'No disponible' }
 									</div>
 								</div>
 							</a>
