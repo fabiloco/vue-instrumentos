@@ -133,7 +133,16 @@
 
 					<div class="barra"></div>
 
-					<div id="pagination"></div>
+					<div id="pagination" class="mt-4 mb-4">
+						<button
+							v-for="(link, index) in links"
+							v-bind:key="index"
+							v-on:click="changePage(link.url)"
+							v-html="link.label"
+							v-bind:class="{ 'bg-gray-300': link.active }"
+							class="px-3 py-2 border border-slate-300 hover:bg-slate-300"
+						></button>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -147,14 +156,26 @@ import { API_URL } from "../config/config";
 export default {
 	data() {
 		return {
-			products: [],
 			API_URL,
+			products: [],
+			links: [],
 		};
 	},
 	async mounted() {
-		const { data } = await getProducts();
-		console.log(data);
+		const { data, links } = await getProducts();
 		this.products = data;
+		this.links = links;
+	},
+
+	methods: {
+		changePage: async function (url) {
+			if (!url) return;
+			const { data, links } = await getProducts(url);
+			this.products = data;
+			this.links = links;
+
+			console.log(this.links);
+		},
 	},
 };
 </script>
