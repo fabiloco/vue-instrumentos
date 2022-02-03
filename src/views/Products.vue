@@ -7,7 +7,9 @@
 		</header>
 
 		<section class="products__list">
-			<div class="products__list__container">
+			<Spinner v-if="loading" />
+
+			<div v-else class="products__list__container">
 				<aside class="list__aside">
 					<h3 class="list__aside__title">Compra por categoria</h3>
 					<div class="list__aside-box"></div>
@@ -89,9 +91,9 @@
 							v-for="(product, index) in products"
 							v-bind:key="index"
 						>
-							<a
+							<router-link
 								class="w-full h-full"
-								href="${`/product#${element.id}`}"
+								v-bind:to="`/product/${product.slug}`"
 							>
 								<img
 									v-bind:src="`${API_URL}/${product.image[0].url}`"
@@ -127,7 +129,7 @@
 										</div>
 									</div>
 								</div>
-							</a>
+							</router-link>
 						</li>
 					</ul>
 
@@ -150,19 +152,25 @@
 </template>
 
 <script>
+import Spinner from "../components/Spinner.vue";
+
 import { getProducts } from "../services/products.services";
 import { API_URL } from "../config/config";
 
 export default {
+	components: { Spinner },
 	data() {
 		return {
 			API_URL,
+			loading: true,
 			products: [],
 			links: [],
 		};
 	},
 	async mounted() {
+		this.loading = true;
 		const { data, links } = await getProducts();
+		this.loading = false;
 		this.products = data;
 		this.links = links;
 	},
@@ -170,11 +178,11 @@ export default {
 	methods: {
 		changePage: async function (url) {
 			if (!url) return;
+			this.loading = true;
 			const { data, links } = await getProducts(url);
+			this.loading = false;
 			this.products = data;
 			this.links = links;
-
-			console.log(this.links);
 		},
 	},
 };
