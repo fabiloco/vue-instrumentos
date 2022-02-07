@@ -22,6 +22,7 @@
 					type="text"
 					autofocus
 					v-model="user.name"
+					required
 				/>
 			</div>
 			<div class="relative flex flex-col mb-2">
@@ -36,6 +37,7 @@
 					name="password"
 					type="password"
 					v-model="user.password"
+					required
 				/>
 			</div>
 			<span
