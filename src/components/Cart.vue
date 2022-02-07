@@ -1,150 +1,6 @@
+<!-- This example requires Tailwind CSS v2.0+ -->
 <template>
-	<Cart/>
-	<header class="header">
-		<nav class="nav">
-			<div class="nav__items">
-				<img src="../assets/img/logo.png" class="logo" />
-				<ul class="nav__btns">
-					<li><router-link to="/">Inicio</router-link></li>
-					<li><router-link to="/products">Guitarras</router-link></li>
-					<li><router-link to="/products">Percusión</router-link></li>
-					<li><router-link to="/products">Bajos</router-link></li>
-					<li><router-link to="/products">Ukuleles</router-link></li>
-					<li><router-link to="/products">Teclados</router-link></li>
-					<li><router-link to="/products">Efectos</router-link></li>
-				</ul>
-			</div>
-			<div class="nav__options">
-				<ul class="options__buttons">
-					<li>
-						<img src="../assets/icons/trolley.svg" />
-						<!-- <router-link to="/shopping_cart">Carro</router-link> -->
-						<button @click="open = true">Carrito</button>
-					</li>
-					<li>
-						<img src="../assets/icons/location.svg" />
-						<a href="javascript:void(0);">Ubicación</a>
-					</li>
-					<li>
-						<img src="../assets/icons/info.svg" />
-						<a href="javascript:void(0);">Info</a>
-					</li>
-
-					<li
-						v-if="isLogged"
-						id="login-btn"
-						v-on:click="onLogout"
-						class="cursor-pointer"
-					>
-						<img src="../assets/icons/log-out.svg" />
-						<a>Log out</a>
-					</li>
-
-					<li v-else id="login-btn">
-						<img src="../assets/icons/login.svg" />
-						<router-link to="/login">Login</router-link>
-					</li>
-				</ul>
-				<div class="options__search">
-					<input class="search__bar" type="search" />
-					<a href="javascript:void(0);"
-						><img
-							class="search__icon"
-							src="../assets/icons/search.svg"
-					/></a>
-				</div>
-			</div>
-		</nav>
-		<nav class="nav-mobile">
-			<div class="nav-mobile-btns">
-				<img src="../assets/img/logo.png" class="logo-mobile" />
-				<div class="menu-deployer">
-					<img
-						src="../assets/icons/menu-icon.svg"
-						class="nav-mobile-menu-icon"
-					/>
-					<div class="nav-mobile__items">
-						<ul class="nav-mobile__btns">
-							<li class="nav-mobile__inicio">
-								<a href="./index.html">Inicio</a>
-							</li>
-							<li class="nav-mobile__subtitle">Categorias</li>
-							<ul class="nav-mobile__categories">
-								<li>
-									<router-link to="/">Inicio</router-link>
-								</li>
-								<li>
-									<router-link to="/products"
-										>Guitarras</router-link
-									>
-								</li>
-								<li>
-									<router-link to="/products"
-										>Percusión</router-link
-									>
-								</li>
-								<li>
-									<router-link to="/products"
-										>Bajos</router-link
-									>
-								</li>
-								<li>
-									<router-link to="/products"
-										>Ukuleles</router-link
-									>
-								</li>
-								<li>
-									<router-link to="/products"
-										>Teclados</router-link
-									>
-								</li>
-								<li>
-									<router-link to="/products"
-										>Efectos</router-link
-									>
-								</li>
-							</ul>
-							<li class="nav-mobile__subtitle">Optiones</li>
-							<ul class="nav-mobile__categories">
-								<li>
-									<img src="../assets/icons/trolley.svg" />
-									<router-link to="/shopping_cart"
-										>Carro</router-link
-									>
-								</li>
-								<li>
-									<img src="../assets/icons/location.svg" />
-									<a href="javascript:void(0);">Ubicación</a>
-								</li>
-								<li>
-									<img src="../assets/icons/info.svg" />
-									<a href="javascript:void(0);">Info</a>
-								</li>
-
-								<li
-									v-if="isLogged"
-									id="login-btn"
-									v-on:click="onLogout"
-									class="cursor-pointer"
-								>
-									<img src="../assets/icons/log-out.svg" />
-									<a>Log out</a>
-								</li>
-
-								<li v-else id="login-btn">
-									<img src="../assets/icons/login.svg" />
-									<router-link to="/login">Login</router-link>
-								</li>
-							</ul>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</nav>
-	</header>
-
-
- <TransitionRoot as="template" :show="open">
+  <TransitionRoot as="template" :show="open">
     <Dialog as="div" class="fixed inset-0 overflow-hidden" @close="open = false">
       <div class="absolute inset-0 overflow-hidden">
         <TransitionChild as="template" enter="ease-in-out duration-500" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in-out duration-500" leave-from="opacity-100" leave-to="opacity-0">
@@ -166,7 +22,7 @@
                     </div>
                   </div>
 
-                  <!-- <div class="mt-8">
+                  <div class="mt-8">
                     <div class="flow-root">
                       <ul role="list" class="-my-6 divide-y divide-gray-200">
                         <li v-for="product in products" :key="product.id" class="py-6 flex">
@@ -201,7 +57,7 @@
                         </li>
                       </ul>
                     </div>
-                  </div> -->
+                  </div>
                 </div>
 
                 <div class="border-t border-gray-200 py-6 px-4 sm:px-6">
@@ -226,7 +82,6 @@
       </div>
     </Dialog>
   </TransitionRoot>
-
 </template>
 
 <script>
@@ -260,29 +115,21 @@ const products = [
 ]
 
 export default {
-	name: "Navbar",
-	components: {
-    	Dialog,
-    	DialogOverlay,
-    	DialogTitle,
-    	TransitionChild,
-    	TransitionRoot,
-    	XIcon,
- 	 },
-	updated() {},
-	methods: {
-		onLogout() {
-			sessionStorage.removeItem("userToken");
-			window.location.href = "/";
-		},
-	},
-	setup() {
-    const open = ref(false)
+  components: {
+    Dialog,
+    DialogOverlay,
+    DialogTitle,
+    TransitionChild,
+    TransitionRoot,
+    XIcon,
+  },
+  setup() {
+    const open = ref(true)
 
     return {
       products,
       open,
     }
   },
-};
+}
 </script>

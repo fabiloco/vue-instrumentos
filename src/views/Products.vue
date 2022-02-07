@@ -49,7 +49,7 @@
 				</aside>
 
 <div class="bg-white">
-    <div class="max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:max-w-full lg:px-8">
+    <div class="max-w-2xl mx-auto py-8 px-4 sm:py-12 sm:px-6 lg:max-w-full lg:px-8">
       <h2 class="text-2xl font-extrabold tracking-tight text-gray-900">Customers also purchased</h2>
       <div class="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         <div
@@ -68,10 +68,6 @@
 
 				</router-link>
 				{{ product.name }}
-
-                <!-- <a v-bind:to="`/product/${product.id}`">
-                  <span aria-hidden="true" class="absolute inset-0" />
-                </a> -->
               </h3>
               <p class="mt-1 text-sm text-gray-500">{{ product.color }}</p>
 			  <div class="flex items-center text-md">
@@ -93,16 +89,22 @@
         </div>
       </div>
     </div>
-	<div id="pagination" class="mt-4 flex items-center justify-center mb-4">
+
+
+
+
+
+	<nav id="pagination" class="relative z-50 mb-4 flex items-center justify-center rounded-md shadow-sm -space-x-px" aria-label="Pagination">
 						<button
 							v-for="(link, index) in links"
 							v-bind:key="index"
 							v-on:click="changePage(link.url)"
-							v-html="link.label"
-							v-bind:class="{ 'bg-gray-300': link.active }"
-							class="px-3 py-2 border  border-slate-300 hover:bg-slate-300"
-						></button>
-					</div>
+							v-html="link.label "
+							v-bind:class="{ 'z-10 border-indigo-500 text-indigo-600': link.active }"
+							v-bind:aria-current="page"
+							class=" bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+						/>
+					</nav>
 	</div>
 			</div>
 		</section>
@@ -115,8 +117,11 @@ import Spinner from "../components/Spinner.vue";
 import { getProducts } from "../services/products.services";
 import { API_URL } from "../config/config";
 
+
 export default {
-	components: { Spinner },
+	components: {
+		Spinner,
+	},
 	data() {
 		return {
 			API_URL,

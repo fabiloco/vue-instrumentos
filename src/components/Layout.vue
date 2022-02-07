@@ -8,6 +8,7 @@
 import Navbar from "./Navbar.vue";
 import Footer from "./Footer.vue";
 
+
 import { getUserData } from "../services/auth.services";
 
 export default {
@@ -21,6 +22,7 @@ export default {
 	components: {
 		Navbar,
 		Footer,
+
 	},
 
 	async mounted() {
