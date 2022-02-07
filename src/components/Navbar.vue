@@ -27,7 +27,18 @@
 						<img src="../assets/icons/info.svg" />
 						<a href="javascript:void(0);">Info</a>
 					</li>
-					<li id="login-btn">
+
+					<li
+						v-if="isLogged"
+						id="login-btn"
+						v-on:click="onLogout"
+						class="cursor-pointer"
+					>
+						<img src="../assets/icons/log-out.svg" />
+						<a>Log out</a>
+					</li>
+
+					<li v-else id="login-btn">
 						<img src="../assets/icons/login.svg" />
 						<router-link to="/login">Login</router-link>
 					</li>
@@ -107,7 +118,18 @@
 									<img src="../assets/icons/info.svg" />
 									<a href="javascript:void(0);">Info</a>
 								</li>
-								<li id="login-btn">
+
+								<li
+									v-if="isLogged"
+									id="login-btn"
+									v-on:click="onLogout"
+									class="cursor-pointer"
+								>
+									<img src="../assets/icons/log-out.svg" />
+									<a>Log out</a>
+								</li>
+
+								<li v-else id="login-btn">
 									<img src="../assets/icons/login.svg" />
 									<router-link to="/login">Login</router-link>
 								</li>
@@ -123,5 +145,17 @@
 <script>
 export default {
 	name: "Navbar",
+	props: {
+		isLogged: Boolean,
+	},
+
+	updated() {},
+
+	methods: {
+		onLogout() {
+			sessionStorage.removeItem("userToken");
+			window.location.href = "/";
+		},
+	},
 };
 </script>

@@ -6,6 +6,7 @@
 		<form
 			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl"
 			id="login-form"
+			v-bind:onsubmit="onLogin"
 		>
 			<h1 class="mb-4 text-4xl font-black">Bienvenido!</h1>
 			<div class="relative flex flex-col mb-4">
@@ -20,6 +21,7 @@
 					name="name"
 					type="text"
 					autofocus
+					v-model="user.name"
 				/>
 			</div>
 			<div class="relative flex flex-col mb-2">
@@ -33,7 +35,7 @@
 					id="password"
 					name="password"
 					type="password"
-					autofocus
+					v-model="user.password"
 				/>
 			</div>
 			<span
@@ -54,3 +56,43 @@
 		</form>
 	</article>
 </template>
+<script>
+import { login } from "../services/auth.services";
+
+export default {
+	data() {
+		return {
+			user: {
+				name: "",
+				password: "",
+			},
+		};
+	},
+
+	beforeCreate() {
+		const token = sessionStorage.getItem("userToken");
+		if (token) {
+			this.$router.push({ path: "/" });
+		}
+	},
+
+	methods: {
+		async onLogin(e) {
+			e.preventDefault();
+			const token = await login(this.user);
+
+			if (token) {
+				window.sessionStorage.setItem("userToken", token);
+				window.location.href = "/profile";
+				// this.$router.push({ path: "profile" });
+			} else {
+				this.$swal({
+					icon: "error",
+					title: "Oops...",
+					text: "El usuario o contraseña no son correctos, por favor, intenta otra vez",
+				});
+			}
+		},
+	},
+};
+</script>

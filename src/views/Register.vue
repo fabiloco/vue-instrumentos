@@ -6,6 +6,7 @@
 		<form
 			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl"
 			id="login-form"
+			v-on:submit="onRegister"
 		>
 			<h1 class="mb-4 text-4xl font-black">Bienvenido!</h1>
 			<div class="relative flex flex-col mb-4">
@@ -19,6 +20,8 @@
 					id="name"
 					name="name"
 					type="text"
+					v-model="user.name"
+					minlength="8"
 					autofocus
 				/>
 			</div>
@@ -33,7 +36,7 @@
 					id="email"
 					name="email"
 					type="email"
-					autofocus
+					v-model="user.email"
 				/>
 			</div>
 			<div class="relative flex flex-col mb-4">
@@ -47,7 +50,8 @@
 					id="password"
 					name="password"
 					type="password"
-					autofocus
+					minlength="8"
+					v-model="user.password"
 				/>
 			</div>
 			<span
@@ -66,3 +70,45 @@
 		</form>
 	</article>
 </template>
+
+<script>
+import { register } from "../services/auth.services";
+
+export default {
+	data() {
+		return {
+			user: {
+				name: "",
+				email: "",
+				password: "",
+			},
+		};
+	},
+
+	beforeCreate() {
+		const token = sessionStorage.getItem("userToken");
+		if (token) {
+			this.$router.push({ path: "/" });
+		}
+	},
+
+	methods: {
+		async onRegister(e) {
+			e.preventDefault();
+			const token = await register(this.user);
+
+			if (token) {
+				window.sessionStorage.setItem("userToken", token);
+				window.location.href = "/profile";
+				// this.$router.push({ path: "profile" });
+			} else {
+				this.$swal({
+					icon: "error",
+					title: "Oops...",
+					text: "Algo ha salido mal con los datos, por favor, rectificalos. El ",
+				});
+			}
+		},
+	},
+};
+</script>
