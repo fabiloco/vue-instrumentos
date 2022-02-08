@@ -3,7 +3,9 @@
 		class="flex items-center justify-center h-screen gap-8 pb-32 pt-44"
 		style="background-color: #f7f4f2"
 	>
+		<Spinner v-if="loading" />
 		<form
+			v-else
 			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl fade-in-bottom"
 			id="login-form"
 			v-on:submit="onRegister"
@@ -76,16 +78,22 @@
 
 <script>
 import { register } from "../services/auth.services";
+import Spinner from "../components/Spinner.vue";
 
 export default {
 	data() {
 		return {
+			loading: false,
 			user: {
 				name: "",
 				email: "",
 				password: "",
 			},
 		};
+	},
+
+	components: {
+		Spinner,
 	},
 
 	beforeCreate() {
@@ -98,6 +106,7 @@ export default {
 	methods: {
 		async onRegister(e) {
 			e.preventDefault();
+			this.loading = true;
 			const token = await register(this.user);
 
 			if (token) {
@@ -110,6 +119,7 @@ export default {
 					title: "Oops...",
 					text: "Algo ha salido mal con los datos, por favor, rectificalos. El ",
 				});
+				this.loading = false;
 			}
 		},
 	},

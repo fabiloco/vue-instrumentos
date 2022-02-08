@@ -3,7 +3,9 @@
 		class="flex items-center justify-center h-screen gap-8 pb-32"
 		style="background-color: #f7f4f2"
 	>
-		<div class="container p-5 mx-auto my-5 fade-in-bottom">
+		<Spinner v-if="loading" />
+
+		<div v-else class="container p-5 mx-auto my-5 fade-in-bottom">
 			<div class="md:flex no-wrap md:-mx-2">
 				<!-- Right Side -->
 				<div class="w-full h-64">
@@ -152,10 +154,13 @@ import {
 	storeAddress,
 } from "../services/address.services";
 
+import Spinner from "../components/Spinner.vue";
+
 export default {
 	data() {
 		return {
 			token: sessionStorage.getItem("userToken"),
+			loading: false,
 			addressData: {
 				address: "",
 				zipcode: "",
@@ -168,6 +173,10 @@ export default {
 			countryNames: [],
 			statesNames: [],
 		};
+	},
+
+	components: {
+		Spinner,
 	},
 
 	async mounted() {
@@ -189,7 +198,7 @@ export default {
 
 		async sendAddress(e) {
 			e.preventDefault();
-
+			this.loading = true;
 			const body = {
 				address: this.addressData.address,
 				zipcode: this.addressData.zipcode,
@@ -212,6 +221,7 @@ export default {
 					text: "Algo ha salido mal con los datos, por favor, rectificalos.",
 				});
 			}
+			this.loading = false;
 			await this.initData();
 		},
 	},

@@ -62,7 +62,7 @@
 </template>
 <script>
 import { login } from "../services/auth.services";
-import { Spinner } from "../components/Spinner.vue";
+import Spinner from "../components/Spinner.vue";
 
 export default {
 	data() {
@@ -95,7 +95,6 @@ export default {
 			if (token) {
 				window.sessionStorage.setItem("userToken", token);
 				window.location.href = "/profile";
-				this.loading = false;
 				// this.$router.push({ path: "profile" });
 			} else {
 				this.loading = false;
