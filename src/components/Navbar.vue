@@ -1,5 +1,4 @@
 <template>
-
 	<header class="header">
 		<nav class="nav">
 			<div class="nav__items">
@@ -144,7 +143,6 @@
 	</header>
 
 
-
 </template>
 
 <script>
@@ -161,6 +159,5 @@ export default {
 			window.location.href = "/";
 		},
 	},
-
 };
 </script>

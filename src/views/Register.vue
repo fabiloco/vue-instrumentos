@@ -23,6 +23,7 @@
 					v-model="user.name"
 					minlength="8"
 					autofocus
+					required
 				/>
 			</div>
 			<div class="relative flex flex-col mb-4">
@@ -37,6 +38,7 @@
 					name="email"
 					type="email"
 					v-model="user.email"
+					required
 				/>
 			</div>
 			<div class="relative flex flex-col mb-4">
@@ -52,6 +54,7 @@
 					type="password"
 					minlength="8"
 					v-model="user.password"
+					required
 				/>
 			</div>
 			<span
