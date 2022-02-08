@@ -141,17 +141,15 @@
 			</div>
 		</nav>
 	</header>
-
-
 </template>
 
 <script>
-
 export default {
 	name: "Navbar",
-	components: {
-
- 	 },
+	props: {
+		isLogged: Boolean,
+	},
+	components: {},
 	updated() {},
 	methods: {
 		onLogout() {

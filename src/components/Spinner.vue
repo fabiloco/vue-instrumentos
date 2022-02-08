@@ -1,6 +1,6 @@
 <template>
 	<div class="flex items-center justify-center w-screen spinner-container">
-		<div class="spinner animate-spin"></div>
+		<div class="spinner scale-in-center"></div>
 	</div>
 </template>
 
@@ -10,7 +10,7 @@
 }
 
 .spinner {
-	border: 4px solid rgba(0, 0, 0, 0.1);
+	border: 4px solid rgba(0, 0, 0, 0.5);
 	border-left-color: transparent;
 	border-radius: 50%;
 	width: 36px;

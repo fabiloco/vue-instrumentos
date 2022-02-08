@@ -3,7 +3,7 @@
 		class="flex items-center justify-center h-screen gap-8 pb-32"
 		style="background-color: #f7f4f2"
 	>
-		<div class="container p-5 mx-auto my-5">
+		<div class="container p-5 mx-auto my-5 fade-in-bottom">
 			<div class="md:flex no-wrap md:-mx-2">
 				<!-- Right Side -->
 				<div class="w-full h-64">

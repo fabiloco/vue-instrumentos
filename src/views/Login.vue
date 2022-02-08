@@ -3,8 +3,10 @@
 		class="flex items-center justify-center h-screen gap-8 pt-32 pb-32"
 		style="background-color: #f7f4f2"
 	>
+		<Spinner v-if="loading" />
 		<form
-			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl"
+			v-else
+			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl fade-in-bottom"
 			id="login-form"
 			v-bind:onsubmit="onLogin"
 		>
@@ -60,15 +62,21 @@
 </template>
 <script>
 import { login } from "../services/auth.services";
+import { Spinner } from "../components/Spinner.vue";
 
 export default {
 	data() {
 		return {
+			loading: false,
 			user: {
 				name: "",
 				password: "",
 			},
 		};
+	},
+
+	components: {
+		Spinner,
 	},
 
 	beforeCreate() {
@@ -81,13 +89,16 @@ export default {
 	methods: {
 		async onLogin(e) {
 			e.preventDefault();
+			this.loading = true;
 			const token = await login(this.user);
 
 			if (token) {
 				window.sessionStorage.setItem("userToken", token);
 				window.location.href = "/profile";
+				this.loading = false;
 				// this.$router.push({ path: "profile" });
 			} else {
+				this.loading = false;
 				this.$swal({
 					icon: "error",
 					title: "Oops...",

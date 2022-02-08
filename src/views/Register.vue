@@ -4,7 +4,7 @@
 		style="background-color: #f7f4f2"
 	>
 		<form
-			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl"
+			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl fade-in-bottom"
 			id="login-form"
 			v-on:submit="onRegister"
 		>

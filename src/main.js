@@ -10,6 +10,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 
 import './assets/css/styles.css';
 import './assets/css/shoping_cart.css';
+import './assets/css/animation.css';
 import './assets/tailwind.css';
 
 createApp(App).use(VueSweetalert2).use(store).use(router).mount('#app');
