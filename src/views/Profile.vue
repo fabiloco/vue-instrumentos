@@ -264,6 +264,13 @@ export default {
 		};
 	},
 
+	beforeCreate() {
+		const token = sessionStorage.getItem("userToken");
+		if (!token) {
+			this.$router.push({ path: "/" });
+		}
+	},
+
 	async mounted() {
 		this.loading = true;
 		await this.initData();
