@@ -3,7 +3,8 @@
 		class="flex gap-8 pt-32 pb-32 h-fit"
 		style="background-color: #f7f4f2"
 	>
-		<div class="container p-5 mx-auto my-5">
+		<Spinner v-if="loading" />
+		<div v-else class="container p-5 mx-auto my-5 fade-in-bottom">
 			<div class="md:flex no-wrap md:-mx-2">
 				<!-- Left Side -->
 				<div class="w-full md:w-3/12 md:mx-2">
@@ -68,7 +69,7 @@
 							>
 								<button
 									class="px-2 py-1 mt-4 mb-2 mr-2 text-white bg-green-500 rounded-md shadow-md w-fit hover:bg-green-600"
-									v-on:click="setIsEditing"
+									v-on:click="setIsEditing(index)"
 								>
 									Editar
 								</button>
@@ -91,7 +92,7 @@
 											>Dirección</label
 										>
 										<input
-											v-if="isEditing"
+											v-if="isEditing[index]"
 											type="text"
 											name="user-address"
 											v-model="address.address"
@@ -109,7 +110,7 @@
 											>Código postal</label
 										>
 										<input
-											v-if="isEditing"
+											v-if="isEditing[index]"
 											type="text"
 											name="user-zipcode"
 											v-model="address.zipcode"
@@ -127,7 +128,7 @@
 											>City</label
 										>
 										<input
-											v-if="isEditing"
+											v-if="isEditing[index]"
 											type="text"
 											name="user-city"
 											v-model="address.city"
@@ -146,7 +147,7 @@
 										>
 
 										<select
-											v-if="isEditing"
+											v-if="isEditing[index]"
 											name="user-country"
 											v-model="address.countries_id"
 											class="px-4 py-2 bg-white border rounded-md border-slate-400"
@@ -187,7 +188,7 @@
 										>
 
 										<select
-											v-if="isEditing"
+											v-if="isEditing[index]"
 											name="user-state"
 											v-model="address.states_id"
 											class="px-4 py-2 bg-white border rounded-md border-slate-400"
@@ -216,7 +217,7 @@
 
 									<div class="flex justify-end">
 										<button
-											v-if="isEditing"
+											v-if="isEditing[index]"
 											class="px-2 py-1 text-white bg-indigo-500 rounded-md shadow-md w-fit hover:bg-indigo-600"
 										>
 											Enviar
@@ -242,9 +243,16 @@ import {
 	updateAddress,
 } from "../services/address.services";
 
+import Spinner from "../components/Spinner.vue";
+
 export default {
+	components: {
+		Spinner,
+	},
+
 	data() {
 		return {
+			loading: true,
 			token: sessionStorage.getItem("userToken"),
 			profileData: {},
 			addresses: [],
@@ -252,12 +260,14 @@ export default {
 			states: [],
 			countryNames: [],
 			statesNames: [],
-			isEditing: false,
+			isEditing: [],
 		};
 	},
 
 	async mounted() {
+		this.loading = true;
 		await this.initData();
+		this.loading = false;
 	},
 
 	methods: {
@@ -276,11 +286,13 @@ export default {
 			this.addresses.map((address, index) => {
 				this.getAllCountryNameById(address.countries_id);
 				this.getAllStateNameById(index, address.states_id);
+
+				this.isEditing[index] = false;
 			});
 		},
 
-		setIsEditing() {
-			this.isEditing = !this.isEditing;
+		setIsEditing(index) {
+			this.isEditing[index] = !this.isEditing[index];
 		},
 
 		getAllCountryNameById(id) {
@@ -292,17 +304,19 @@ export default {
 			});
 		},
 
-		async onCountrySelectUpdated(index, address) {
-			const state = await getStates(address.countries_id, this.token);
+		onCountrySelectUpdated(index, address) {
+			const state = getStates(address.countries_id, this.token);
 			this.states[index] = state;
 		},
 
-		getAllStateNameById(index, id) {
+		async getAllStateNameById(index, id) {
 			console.log(id);
-			console.log(this.states[index]);
+			console.log(index);
+			console.log(this.states[0]);
 		},
 
 		async sendAddress(e, address) {
+			this.loading = true;
 			e.preventDefault();
 
 			const body = {
@@ -315,11 +329,14 @@ export default {
 
 			await updateAddress(address.id, this.token, body);
 			await this.initData();
+			this.loading = false;
 		},
 
 		async deleteAddress(address) {
+			this.loading = true;
 			await deleteAddress(address.id, this.token);
 			await this.initData();
+			this.loading = false;
 		},
 	},
 };
