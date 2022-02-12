@@ -145,7 +145,6 @@ export default {
 		getData: async function (id) {
 			this.loading = true;
 			this.product = await getProduct(id);
-			console.log(this.product);
 			this.loading = false;
 		},
 	},

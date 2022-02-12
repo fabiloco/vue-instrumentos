@@ -266,7 +266,6 @@ export default {
 		sendData: async function (e) {
 			e.preventDefault();
 			this.loading = true;
-			console.log(this.newProduct);
 			const res = await storeProduct(this.newProduct, this.token);
 
 			if (res) {

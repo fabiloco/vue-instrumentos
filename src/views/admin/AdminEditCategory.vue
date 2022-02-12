@@ -3,11 +3,12 @@
 		id="panel-products"
 		class="flex justify-center w-full h-screen pt-16 overflow-y-auto"
 	>
-		<div class="w-3/4 p-6">
+		<Spinner v-if="loading" />
+		<div v-else class="w-3/4 p-6">
 			<h1 class="mb-4 text-5xl font-bold">Editando categoria</h1>
 			<div class="w-full mb-6 bg-slate-300" style="height: 1px"></div>
 
-			<form action="#" method="POST" id="category-form">
+			<form v-on:submit="sendData" id="category-form">
 				<div class="shadow sm:rounded-md sm:overflow-hidden">
 					<div class="px-4 py-5 space-y-6 bg-white sm:p-6">
 						<div class="grid grid-cols-3 gap-6">
@@ -24,6 +25,7 @@
 										id="category-name"
 										placeholder="Nombre de la categoria"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="categoryUpdated.name"
 										required
 									/>
 								</div>
@@ -44,6 +46,7 @@
 									rows="3"
 									class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 									placeholder="Esta categoria es muy interesante"
+									v-model="categoryUpdated.description"
 									required
 								></textarea>
 							</div>
@@ -62,3 +65,74 @@
 		</div>
 	</div>
 </template>
+<script>
+import Spinner from "../../components/Spinner.vue";
+import { API_URL } from "../../config/config";
+import {
+	getCategory,
+	updateCategory,
+} from "../../services/categories.services";
+
+export default {
+	data() {
+		return {
+			API_URL,
+			token: sessionStorage.getItem("adminToken"),
+			loading: true,
+			category: {},
+			categoryUpdated: {
+				name: "",
+				description: "",
+			},
+		};
+	},
+
+	components: {
+		Spinner,
+	},
+
+	mounted() {
+		this.getData(this.$route.params.id);
+	},
+
+	methods: {
+		getData: async function (id) {
+			this.loading = true;
+			this.category = await getCategory(id);
+			this.categoryUpdated = {
+				...this.categoryUpdated,
+				name: this.category.name,
+				description: this.category.description,
+			};
+			this.loading = false;
+		},
+		sendData: async function (e) {
+			e.preventDefault();
+			this.loading = true;
+			const res = await updateCategory(
+				this.category.id,
+				this.categoryUpdated,
+				this.token
+			);
+
+			if (res) {
+				this.$swal({
+					icon: "success",
+					title: "Exito",
+					text: "La categoria se ha actualizado de forma exitosa",
+				});
+			} else {
+				this.$swal({
+					icon: "error",
+					title: "Oops...",
+					text: "Ha habido algún problema con los datos digitados, por favor, reviselos",
+				});
+			}
+
+			this.loading = false;
+
+			this.$router.push({ path: "/admin/categories" });
+		},
+	},
+};
+</script>
