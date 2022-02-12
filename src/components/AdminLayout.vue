@@ -71,6 +71,7 @@
 			<div class="flex items-center w-full h-16 mt-auto">
 				<!-- Action Section -->
 				<button
+					v-on:click="onLogout"
 					class="flex items-center justify-center w-full h-16 mx-auto focus:text-orange-500 hover:bg-red-200 focus:outline-none"
 					id="admin-log-out-btn"
 				>
@@ -98,3 +99,13 @@
 		<router-view />
 	</div>
 </template>
+<script>
+export default {
+	methods: {
+		onLogout() {
+			sessionStorage.removeItem("adminToken");
+			window.location.href = "/admin/login";
+		},
+	},
+}
+</script>

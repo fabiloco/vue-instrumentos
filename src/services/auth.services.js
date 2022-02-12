@@ -1,7 +1,5 @@
 import { API_URL, headers } from '../config/config.js';
 
-// get
-
 // AUTH
 export const login = async (user) => {
 	const res = await fetch(`${API_URL}/api/auth/login`, {
