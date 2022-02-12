@@ -1,6 +1,6 @@
 <template>
 	<Navbar v-bind:isLogged="isLogged" />
-	<slot />
+	<router-view />
 	<Footer />
 </template>
 

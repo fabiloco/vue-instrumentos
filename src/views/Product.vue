@@ -5,7 +5,7 @@
 				<img
 					id="product-thumbnail"
 					class="object-contain w-full rounded-sm h-80"
-					src="https://cdn.shopify.com/s/files/1/0512/9116/0767/products/1ae418bc-6754-41da-b17b-0d4a62ee981d_1_700x.jpg?v=1605562725"
+					v-bind:src="`${API_URL}/${product.thumbnail}`"
 					alt=""
 				/>
 			</div>
