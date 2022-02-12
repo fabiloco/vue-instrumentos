@@ -3,11 +3,12 @@
 		id="panel-products"
 		class="flex justify-center w-full h-screen pt-16 overflow-y-auto"
 	>
-		<div class="w-3/4 p-6">
+		<Spinner v-if="loading" />
+		<div v-else class="w-3/4 p-6">
 			<h1 class="mb-4 text-5xl font-bold">Nuevo producto</h1>
 			<div class="w-full mb-6 bg-slate-300" style="height: 1px"></div>
 
-			<form action="#" method="POST" id="product-form">
+			<form v-on:submit="sendData" id="product-form">
 				<div class="shadow sm:rounded-md sm:overflow-hidden">
 					<div class="px-4 py-5 space-y-6 bg-white sm:p-6">
 						<div class="grid grid-cols-3 gap-6">
@@ -24,6 +25,7 @@
 										id="product-name"
 										placeholder="Nombre del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="newProduct.name"
 										required
 									/>
 								</div>
@@ -41,6 +43,7 @@
 										id="product-price"
 										placeholder="Precio del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="newProduct.price"
 										required
 									/>
 								</div>
@@ -58,6 +61,7 @@
 										id="product-weight"
 										placeholder="Peso del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="newProduct.weight"
 										required
 									/>
 								</div>
@@ -75,6 +79,7 @@
 										id="product-stock"
 										placeholder="Stock disponible del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="newProduct.stock"
 										required
 									/>
 								</div>
@@ -95,6 +100,7 @@
 									rows="3"
 									class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 									placeholder="Este es le mejor producto del mundo"
+									v-model="newProduct.description"
 									required
 								></textarea>
 							</div>
@@ -135,6 +141,9 @@
 												name="product-thumbnail"
 												type="file"
 												class="sr-only"
+												v-on:change="
+													onThumbnailImgChange
+												"
 												required
 											/>
 										</label>
@@ -182,6 +191,7 @@
 												type="file"
 												class="sr-only"
 												multiple
+												v-on:change="onImagesChange"
 												required
 											/>
 										</label>
@@ -207,3 +217,75 @@
 		</div>
 	</div>
 </template>
+<script>
+import Spinner from "../../components/Spinner.vue";
+import { storeProduct } from "../../services/products.services";
+import { API_URL } from "../../config/config";
+
+export default {
+	data() {
+		return {
+			API_URL,
+			token: sessionStorage.getItem("adminToken"),
+			loading: false,
+			newProduct: {
+				name: "",
+				description: "",
+				price: "",
+				weight: "",
+				stock: "",
+				thumbnail: null,
+				images: [],
+			},
+		};
+	},
+
+	components: {
+		Spinner,
+	},
+
+	methods: {
+		onImagesChange: function (e) {
+			const images = [];
+
+			for (const img of e.target.files) {
+				images.push(img);
+			}
+
+			this.newProduct = {
+				...this.newProduct,
+				images: images,
+			};
+		},
+		onThumbnailImgChange: function (e) {
+			this.newProduct = {
+				...this.newProduct,
+				thumbnail: e.target.files[0],
+			};
+		},
+		sendData: async function (e) {
+			e.preventDefault();
+			this.loading = true;
+			console.log(this.newProduct);
+			const res = await storeProduct(this.newProduct, this.token);
+
+			if (res) {
+				this.$swal({
+					icon: "success",
+					title: "Exito",
+					text: "El producto se ha creado de forma exitosa",
+				});
+			} else {
+				this.$swal({
+					icon: "error",
+					title: "Oops...",
+					text: "Ha habido algún problema con los datos digitados, por favor, reviselos",
+				});
+			}
+			this.loading = false;
+
+			this.$router.push({ path: "/admin/products" });
+		},
+	},
+};
+</script>

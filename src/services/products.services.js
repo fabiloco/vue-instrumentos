@@ -19,8 +19,6 @@ export const getProduct = async (id) => {
 export const updateProduct = async (id, product, token) => {
 	const body = new FormData();
 
-	console.log(product);
-
 	body.append('name', product.name);
 	body.append('price', product.price);
 	body.append('weight', product.weight);
@@ -34,7 +32,7 @@ export const updateProduct = async (id, product, token) => {
 		body,
 	});
 	const data = await res.json();
-	return data;
+	return data.data;
 };
 
 export const storeProduct = async (product, token) => {
@@ -58,7 +56,7 @@ export const storeProduct = async (product, token) => {
 	});
 
 	const data = await res.json();
-	return data;
+	return data.data;
 };
 
 export const deteleProduct = async (id, token) => {

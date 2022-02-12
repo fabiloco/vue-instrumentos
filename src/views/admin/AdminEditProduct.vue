@@ -3,11 +3,12 @@
 		id="panel-products"
 		class="flex justify-center w-full h-screen pt-16 overflow-y-auto"
 	>
-		<div class="w-3/4 p-6">
+		<Spinner v-if="loading" />
+		<div v-else class="w-3/4 p-6">
 			<h1 class="mb-4 text-5xl font-bold">Editando producto</h1>
 			<div class="w-full mb-6 bg-slate-300" style="height: 1px"></div>
 
-			<form action="#" method="POST" id="product-form">
+			<form v-on:submit="sendData" id="product-form">
 				<div class="shadow sm:rounded-md sm:overflow-hidden">
 					<div class="px-4 py-5 space-y-6 bg-white sm:p-6">
 						<div class="grid grid-cols-3 gap-6">
@@ -24,7 +25,7 @@
 										id="product-name"
 										placeholder="Nombre del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-										required
+										v-model="productUpdated.name"
 									/>
 								</div>
 							</div>
@@ -41,6 +42,7 @@
 										id="product-price"
 										placeholder="Precio del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="productUpdated.price"
 										required
 									/>
 								</div>
@@ -58,6 +60,7 @@
 										id="product-weight"
 										placeholder="Peso del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="productUpdated.weight"
 										required
 									/>
 								</div>
@@ -75,6 +78,7 @@
 										id="product-stock"
 										placeholder="Stock disponible del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+										v-model="productUpdated.stock"
 										required
 									/>
 								</div>
@@ -95,6 +99,7 @@
 									rows="3"
 									class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 									placeholder="Este es le mejor producto del mundo"
+									v-model="productUpdated.description"
 									required
 								></textarea>
 							</div>
@@ -135,6 +140,7 @@
 												name="product-thumbnail"
 												type="file"
 												class="sr-only"
+												v-on:change="onInputImgChange"
 												required
 											/>
 										</label>
@@ -160,3 +166,85 @@
 		</div>
 	</div>
 </template>
+<script>
+import Spinner from "../../components/Spinner.vue";
+import { getProduct, updateProduct } from "../../services/products.services";
+import { API_URL } from "../../config/config";
+
+export default {
+	data() {
+		return {
+			API_URL,
+			token: sessionStorage.getItem("adminToken"),
+			loading: true,
+			product: {},
+			productUpdated: {
+				name: "",
+				description: "",
+				price: "",
+				weight: "",
+				stock: "",
+				thumbnail: null,
+			},
+		};
+	},
+
+	components: {
+		Spinner,
+	},
+
+	mounted() {
+		this.getData(this.$route.params.id);
+	},
+
+	methods: {
+		getData: async function (id) {
+			this.loading = true;
+			this.product = await getProduct(id);
+			this.productUpdated = {
+				...this.productUpdated,
+				name: this.product.name,
+				description: this.product.description,
+				price: this.product.price,
+				weight: this.product.weight,
+				stock: this.product.stock,
+				thumbnail: null,
+			};
+			this.loading = false;
+		},
+		onInputImgChange: function (e) {
+			this.productUpdated = {
+				...this.productUpdated,
+				thumbnail: e.target.files[0],
+			};
+		},
+		sendData: async function (e) {
+			e.preventDefault();
+			this.loading = true;
+			const res = await updateProduct(
+				this.product.id,
+				this.productUpdated,
+				this.token
+			);
+
+			if (res) {
+				this.$swal({
+					icon: "success",
+					title: "Exito",
+					text: "El producto se ha actualizado de forma exitosa",
+				});
+			} else {
+				this.$swal({
+					icon: "error",
+					title: "Oops...",
+					text: "Ha habido algún problema con los datos digitados, por favor, reviselos",
+				});
+			}
+
+			this.loading = false;
+
+			this.$router.push({ path: "/admin/products" });
+		},
+	},
+};
+</script>
