@@ -107,5 +107,5 @@ export default {
 			window.location.href = "/admin/login";
 		},
 	},
-}
+};
 </script>
