@@ -126,7 +126,7 @@
 						<button
 							v-for="(link, index) in links"
 							v-bind:key="index"
-							v-on:click="changePage(link.url)"
+							v-on:click="changePage(link.url, link.active)"
 							v-html="link.label"
 							v-bind:class="{
 								'z-10 border-indigo-500 text-indigo-600':
@@ -172,8 +172,8 @@ export default {
 			this.products = data;
 			this.links = links;
 		},
-		changePage: async function (url) {
-			if (!url) return;
+		changePage: async function (url, active) {
+			if (!url || active) return;
 			this.loading = true;
 			const { data, links } = await getProducts(url);
 			this.loading = false;

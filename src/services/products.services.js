@@ -28,7 +28,7 @@ export const updateProduct = async (id, product, token) => {
 	body.append('description', product.description);
 	body.append('thumbnail', product.thumbnail);
 
-	const res = await fetch(`${API_URL}/products/${id}`, {
+	const res = await fetch(`${API_URL}/api/products/${id}`, {
 		method: 'POST',
 		headers: { ...headers2, Authorization: `Bearer ${token}` },
 		body,
@@ -51,7 +51,7 @@ export const storeProduct = async (product, token) => {
 		body.append('images[]', image);
 	}
 
-	const res = await fetch(`${API_URL}/products`, {
+	const res = await fetch(`${API_URL}/api/products`, {
 		method: 'POST',
 		headers: { ...headers2, Authorization: `Bearer ${token}` },
 		body,
@@ -62,11 +62,11 @@ export const storeProduct = async (product, token) => {
 };
 
 export const deteleProduct = async (id, token) => {
-	const res = await fetch(`${API_URL}/products/${id}`, {
+	const res = await fetch(`${API_URL}/api/products/${id}`, {
 		method: 'DELETE',
 		headers: { ...headers, Authorization: `Bearer ${token}` },
 	});
 
 	const data = await res.json();
-	return data.data;
+	return data;
 };

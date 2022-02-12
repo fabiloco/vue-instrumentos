@@ -173,6 +173,21 @@ const routes = [
 	},
 
 	{
+		path: '/admin/product/:id',
+		name: 'AdminProduct',
+		component: AdminLayout,
+		children: [
+			{
+				path: '',
+				component: () =>
+					import(
+						/* webpackChunkName: "about" */ '../views/admin/AdminProduct.vue'
+					),
+			},
+		],
+	},
+
+	{
 		path: '/admin/categories',
 		name: 'AdminCategories',
 		component: AdminLayout,

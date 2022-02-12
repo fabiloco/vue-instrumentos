@@ -126,7 +126,12 @@
 												</button>
 											</router-link>
 											<button
-												v-on:click="deleteProduct"
+												v-on:click="
+													deleteProduct(
+														product.id,
+														token
+													)
+												"
 												class="ml-3 text-red-600 hover:text-red-900"
 											>
 												Eliminar
@@ -141,11 +146,22 @@
 			</div>
 		</div>
 		<div class="max-w-2xl mx-auto">
-			<nav aria-label="Page navigation example">
-				<ul
-					id="paginator-products"
-					class="inline-flex -space-x-px"
-				></ul>
+			<nav
+				id="pagination"
+				class="relative z-50 flex items-center justify-center mb-4 -space-x-px rounded-md shadow-sm"
+				aria-label="Pagination"
+			>
+				<button
+					v-for="(link, index) in links"
+					v-bind:key="index"
+					v-on:click="changePage(link.url, link.active)"
+					v-html="link.label"
+					v-bind:class="{
+						'z-10 border-indigo-500 text-indigo-600': link.active,
+					}"
+					v-bind:aria-current="page"
+					class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
+				/>
 			</nav>
 		</div>
 	</div>
@@ -153,7 +169,7 @@
 <script>
 import Spinner from "../../components/Spinner.vue";
 
-import { getProducts } from "../../services/products.services";
+import { deteleProduct, getProducts } from "../../services/products.services";
 import { API_URL } from "../../config/config";
 
 export default {
@@ -163,6 +179,7 @@ export default {
 	data() {
 		return {
 			API_URL,
+			token: sessionStorage.getItem("adminToken"),
 			loading: true,
 			products: [],
 			links: [],
@@ -180,17 +197,35 @@ export default {
 			this.products = data;
 			this.links = links;
 		},
-		changePage: async function (url) {
-			if (!url) return;
+		changePage: async function (url, active) {
+			if (!url || active) return;
 			this.loading = true;
 			const { data, links } = await getProducts(url);
 			this.loading = false;
 			this.products = data;
 			this.links = links;
 		},
-		deleteProduct: async function () {
-			// todo
-			console.log("TODO");
+		deleteProduct: async function (id, token) {
+			this.$swal({
+				title: `¿Realmente quieres borrar el producto de id:${id}?`,
+				showDenyButton: true,
+				showCancelButton: true,
+				confirmButtonText: "No borrar",
+				denyButtonText: `Borrar`,
+			}).then(async (result) => {
+				if (result.isDenied) {
+					this.loading = true;
+					const res = await deteleProduct(id, token);
+					if (res) {
+						this.$swal(
+							"Producto eliminado con exito!",
+							"",
+							"success"
+						);
+						this.getData();
+					}
+				}
+			});
 		},
 	},
 };
