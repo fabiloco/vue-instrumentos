@@ -1,14 +1,15 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <template>
 	<div
-		v-show="onViewModal"
+		v-if="onViewModal"
 		class="fixed inset-0 overflow-hidden"
 		style="z-index: 900099090909"
 		aria-labelledby="slide-over-title"
 		role="dialog"
 		aria-modal="true"
 	>
-		<div class="absolute inset-0 overflow-hidden">
+		<div v-if="loading">loading</div>
+		<div v-else class="absolute inset-0 overflow-hidden">
 			<div
 				class="absolute inset-0 transition-opacity bg-gray-500 bg-opacity-75"
 				aria-hidden="true"
@@ -60,12 +61,17 @@
 										role="list"
 										class="-my-6 divide-y divide-gray-200"
 									>
-										<li class="flex py-6">
+										<li
+											v-for="(product, index) in this
+												.$store.state.products"
+											v-bind:key="index"
+											class="flex py-6"
+										>
 											<div
 												class="flex-shrink-0 w-24 h-24 overflow-hidden border border-gray-200 rounded-md"
 											>
 												<img
-													src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg"
+													v-bind:src="`${API_URL}/${product.thumbnail}`"
 													alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
 													class="object-cover object-center w-full h-full"
 												/>
@@ -78,84 +84,43 @@
 													<div
 														class="flex justify-between text-base font-medium text-gray-900"
 													>
-														<h3>
-															<a href="#">
-																Throwback Hip
-																Bag
-															</a>
-														</h3>
-														<p class="ml-4">
-															$90.00
-														</p>
-													</div>
-													<p
-														class="mt-1 text-sm text-gray-500"
-													>
-														Salmon
-													</p>
-												</div>
-												<div
-													class="flex items-end justify-between flex-1 text-sm"
-												>
-													<p class="text-gray-500">
-														Qty 1
-													</p>
-
-													<div class="flex">
-														<button
-															type="button"
-															class="font-medium text-indigo-600 hover:text-indigo-500"
+														<h3
+															class="hover:underline"
 														>
-															Remove
-														</button>
-													</div>
-												</div>
-											</div>
-										</li>
-
-										<li class="flex py-6">
-											<div
-												class="flex-shrink-0 w-24 h-24 overflow-hidden border border-gray-200 rounded-md"
-											>
-												<img
-													src="https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg"
-													alt="Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch."
-													class="object-cover object-center w-full h-full"
-												/>
-											</div>
-
-											<div
-												class="flex flex-col flex-1 ml-4"
-											>
-												<div>
-													<div
-														class="flex justify-between text-base font-medium text-gray-900"
-													>
-														<h3>
-															<a href="#">
-																Medium Stuff
-																Satchel
-															</a>
+															<router-link
+																v-bind:to="`/product/${product.id}`"
+															>
+																{{
+																	product.name
+																}}
+															</router-link>
 														</h3>
 														<p class="ml-4">
-															$32.00
+															$COP
+															{{ product.price }}
 														</p>
 													</div>
 													<p
 														class="mt-1 text-sm text-gray-500"
 													>
-														Blue
+														SKU: {{ product.sku }}
 													</p>
 												</div>
 												<div
 													class="flex items-end justify-between flex-1 text-sm"
 												>
 													<p class="text-gray-500">
-														Qty 1
+														Cantidad:
+														{{ product.quantity }}
 													</p>
 
 													<div class="flex">
 														<button
+															v-on:click="
+																deleteFromCart(
+																	product.cart_id
+																)
+															"
 															type="button"
 															class="font-medium text-indigo-600 hover:text-indigo-500"
 														>
@@ -175,7 +140,7 @@
 								class="flex justify-between text-base font-medium text-gray-900"
 							>
 								<p>Subtotal</p>
-								<p>$262.00</p>
+								<p>$COP {{ totalAmount }}</p>
 							</div>
 							<p class="mt-0.5 text-sm text-gray-500">
 								Shipping and taxes calculated at checkout.
@@ -192,16 +157,18 @@
 							>
 								<p>
 									or
-									<button
-										type="button"
-										class="font-medium text-indigo-600 hover:text-indigo-500"
-									>
-										Continue Shopping<span
-											aria-hidden="true"
+									<router-link to="/products">
+										<button
+											type="button"
+											class="font-medium text-indigo-600 hover:text-indigo-500"
 										>
-											&rarr;</span
-										>
-									</button>
+											Continue Shopping<span
+												aria-hidden="true"
+											>
+												&rarr;</span
+											>
+										</button>
+									</router-link>
 								</p>
 							</div>
 						</div>
@@ -213,44 +180,40 @@
 </template>
 
 <script>
-const products = [
-	{
-		id: 1,
-		name: "Throwback Hip Bag",
-		href: "#",
-		color: "Salmon",
-		price: "$90.00",
-		quantity: 1,
-		imageSrc:
-			"https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg",
-		imageAlt:
-			"Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.",
-	},
-	{
-		id: 2,
-		name: "Medium Stuff Satchel",
-		href: "#",
-		color: "Blue",
-		price: "$32.00",
-		quantity: 1,
-		imageSrc:
-			"https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg",
-		imageAlt:
-			"Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
-	},
-	// More products...
-];
+import { API_URL } from "../config/config";
+import { deleteCartItem } from "../services/cart.services";
 
 export default {
 	props: {
 		onViewModal: Boolean,
 		toggleOnViewModal: Function,
 	},
-	setup() {
+	data() {
 		return {
-			products,
+			loading: false,
+			API_URL,
+			token: sessionStorage.getItem("userToken"),
 			open,
+			totalAmount: 0,
 		};
+	},
+	updated() {
+		this.getTotalAmount(this.$store.state.products);
+	},
+	mounted() {
+		this.$store.dispatch("setCarData");
+	},
+	methods: {
+		deleteFromCart: async function (id) {
+			await deleteCartItem(id, this.token);
+			await this.$store.dispatch("setCarData");
+		},
+		getTotalAmount: function (products) {
+			this.totalAmount = 0;
+			products.forEach((element) => {
+				this.totalAmount += element.price * element.quantity;
+			});
+		},
 	},
 };
 </script>

@@ -101,6 +101,12 @@
 </template>
 <script>
 export default {
+	beforeMount() {
+		const token = sessionStorage.getItem("adminToken");
+		if (!token) {
+			this.$router.push({ path: "/admin/login" });
+		}
+	},
 	methods: {
 		onLogout() {
 			sessionStorage.removeItem("adminToken");

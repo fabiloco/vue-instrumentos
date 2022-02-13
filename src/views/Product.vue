@@ -28,17 +28,24 @@
 				<div class="mt-4">
 					<p class="mb-2 text-sm">Cantidad:</p>
 					<div class="product__info-item products__controls-mobile">
-						<button id="product-minus" class="quantity-controller">
+						<button
+							id="product-minus"
+							class="quantity-controller"
+							v-on:click="substractToCount"
+						>
 							<img
 								class="controllers-icons"
 								src="../assets/icons/minus.svg"
 								alt="minus"
 							/>
 						</button>
-						<div id="product-counter" class="quantity-view">1</div>
+						<div id="product-counter" class="quantity-view">
+							{{ count }}
+						</div>
 						<button
 							id="product-plus"
 							class="quantity-controller plus"
+							v-on:click="addToCount"
 						>
 							<img
 								class="controllers-icons"
@@ -51,6 +58,7 @@
 				<div class="mt-6">
 					<button
 						id="add-to-cart-btn"
+						v-on:click="onAddToCart"
 						class="px-4 py-2 mr-4 font-light text-white transition-all bg-red-600 border border-red-600 hover:bg-red-500"
 					>
 						Añadir al carrito
@@ -95,14 +103,17 @@
 <script>
 import "../assets/css/productos.css";
 import { API_URL } from "../config/config";
+import { addToCart } from "../services/cart.services";
 import { getProduct } from "../services/products.services";
 
 export default {
 	data() {
 		return {
 			API_URL,
+			token: sessionStorage.getItem("userToken"),
 			loading: true,
 			product: {},
+			count: 1,
 		};
 	},
 
@@ -114,8 +125,27 @@ export default {
 		getData: async function (id) {
 			this.loading = true;
 			this.product = await getProduct(id);
-			console.log(this.product);
 			this.loading = false;
+		},
+		addToCount: function () {
+			this.count++;
+			if (this.count < 0) this.count = 1;
+		},
+		substractToCount: function () {
+			this.count--;
+			if (this.count < 1) this.count = 1;
+		},
+		onAddToCart: async function () {
+			if (this.token) {
+				const body = {
+					product_id: this.product.id,
+					quantity: this.count,
+				};
+				await addToCart(this.token, body);
+				await this.$store.dispatch("setCarData");
+			} else {
+				this.$router.push({ path: "/login" });
+			}
 		},
 	},
 };

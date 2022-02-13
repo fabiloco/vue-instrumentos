@@ -16,9 +16,11 @@
 			<div class="nav__options">
 				<ul class="options__buttons">
 					<li>
-						<img src="../assets/icons/trolley.svg" />
+						<img v-if="token" src="../assets/icons/trolley.svg" />
 						<!-- <router-link to="/shopping_cart">Carro</router-link> -->
-						<button @click="onViewModal = true">Carrito</button>
+						<button v-if="token" @click="onViewModal = true">
+							Carrito
+						</button>
 					</li>
 					<li>
 						<img src="../assets/icons/location.svg" />
@@ -158,6 +160,7 @@ export default {
 	data: () => {
 		return {
 			onViewModal: false,
+			token: sessionStorage.getItem("userToken"),
 		};
 	},
 	methods: {
