@@ -2,6 +2,15 @@
 	<div
 		class="flex items-center justify-center min-h-full px-4 py-12 sm:px-6 lg:px-8"
 	>
+		<div class="absolute bottom-2 left-2">
+			<router-link to="/">
+				<button
+					class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md group hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+				>
+					👈 Volver a la página principal
+				</button>
+			</router-link>
+		</div>
 		<Spinner v-if="loading" />
 
 		<div v-else class="w-full max-w-md space-y-8">

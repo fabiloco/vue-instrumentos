@@ -15,6 +15,10 @@
 			</div>
 			<div class="nav__options">
 				<ul class="options__buttons">
+					<li v-if="token">
+						<img src="../assets/icons/tool.svg" />
+						<router-link to="/admin/login">Admin panel</router-link>
+					</li>
 					<li>
 						<img v-if="token" src="../assets/icons/trolley.svg" />
 						<!-- <router-link to="/shopping_cart">Carro</router-link> -->
@@ -30,7 +34,10 @@
 						<img src="../assets/icons/info.svg" />
 						<a href="javascript:void(0);">Info</a>
 					</li>
-
+					<li v-if="isLogged">
+						<img src="../assets/icons/user.svg" />
+						<router-link to="/profile">Perfil</router-link>
+					</li>
 					<li
 						v-if="isLogged"
 						id="login-btn"
@@ -64,7 +71,7 @@
 						src="../assets/icons/menu-icon.svg"
 						class="nav-mobile-menu-icon"
 					/>
-					<div class="nav-mobile__items">
+					<div class="z-50 nav-mobile__items">
 						<ul class="nav-mobile__btns">
 							<li class="nav-mobile__inicio">
 								<a href="./index.html">Inicio</a>
@@ -107,11 +114,24 @@
 							</ul>
 							<li class="nav-mobile__subtitle">Optiones</li>
 							<ul class="nav-mobile__categories">
-								<li>
-									<img src="../assets/icons/trolley.svg" />
-									<router-link to="/shopping_cart"
-										>Carro</router-link
+								<li v-if="token">
+									<img src="../assets/icons/tool.svg" />
+									<router-link to="/admin/login"
+										>Admin panel</router-link
 									>
+								</li>
+								<li>
+									<img
+										v-if="token"
+										src="../assets/icons/trolley.svg"
+									/>
+									<!-- <router-link to="/shopping_cart">Carro</router-link> -->
+									<button
+										v-if="token"
+										@click="onViewModal = true"
+									>
+										Carrito
+									</button>
 								</li>
 								<li>
 									<img src="../assets/icons/location.svg" />
@@ -121,7 +141,12 @@
 									<img src="../assets/icons/info.svg" />
 									<a href="javascript:void(0);">Info</a>
 								</li>
-
+								<li v-if="isLogged">
+									<img src="../assets/icons/user.svg" />
+									<router-link to="/profile"
+										>Perfil</router-link
+									>
+								</li>
 								<li
 									v-if="isLogged"
 									id="login-btn"
