@@ -165,10 +165,10 @@
 										>
 
 										<Field
-											v-if="isEditing[index]"
 											name="user-country"
 											v-model="address.countries_id"
 											class="h-10 px-4 py-2 bg-white border rounded-md border-slate-400"
+											v-bind:disabled="!isEditing[index]"
 											:rules="validatePostalCode"
 											as="select"
 											v-on:change="
@@ -194,10 +194,6 @@
 												{{ country.name }}
 											</option>
 										</Field>
-
-										<p v-else class="px-4 py-2">
-											{{ countryNames[index] }}
-										</p>
 										<ErrorMessage
 											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
 											role="alert"
@@ -213,7 +209,7 @@
 										>
 
 										<Field
-											v-if="isEditing[index]"
+											v-bind:disabled="!isEditing[index]"
 											name="user-state"
 											v-model="address.states_id"
 											class="h-10 px-4 py-2 bg-white border rounded-md border-slate-400"
@@ -236,10 +232,6 @@
 												{{ state.name }}
 											</option>
 										</Field>
-
-										<p v-else class="px-4 py-2">
-											{{ address.states_id }}
-										</p>
 
 										<ErrorMessage
 											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
@@ -394,8 +386,8 @@ export default {
 			});
 		},
 
-		onCountrySelectUpdated(index, address) {
-			const state = getStates(address.countries_id, this.token);
+		async onCountrySelectUpdated(index, address) {
+			const state = await getStates(address.countries_id, this.token);
 			this.states[index] = state;
 		},
 
