@@ -81,8 +81,8 @@
 									Eliminar
 								</button>
 
-								<form
-									v-on:submit="sendAddress($event, address)"
+								<Form
+									@submit="sendAddress(address)"
 									class="grid gap-2 p-2 text-sm rounded-md bg-gray-50 md:grid-cols-2"
 								>
 									<div class="grid grid-cols-2">
@@ -91,16 +91,22 @@
 											class="px-4 py-2 font-semibold"
 											>Dirección</label
 										>
-										<input
+										<Field
 											v-if="isEditing[index]"
 											type="text"
 											name="user-address"
 											v-model="address.address"
-											class="px-4 py-2 border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 border rounded-md border-slate-400"
+											:rules="validateAddress"
 										/>
 										<p v-else class="px-4 py-2">
 											{{ address.address }}
 										</p>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											role="alert"
+											name="user-address"
+										/>
 									</div>
 
 									<div class="grid grid-cols-2">
@@ -109,16 +115,22 @@
 											class="px-4 py-2 font-semibold"
 											>Código postal</label
 										>
-										<input
+										<Field
 											v-if="isEditing[index]"
 											type="text"
 											name="user-zipcode"
 											v-model="address.zipcode"
-											class="px-4 py-2 border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 border rounded-md border-slate-400"
+											:rules="validatePostalCode"
 										/>
 										<p v-else class="px-4 py-2">
 											{{ address.zipcode }}
 										</p>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											role="alert"
+											name="user-zipcode"
+										/>
 									</div>
 
 									<div class="grid grid-cols-2">
@@ -127,16 +139,22 @@
 											class="px-4 py-2 font-semibold"
 											>City</label
 										>
-										<input
+										<Field
 											v-if="isEditing[index]"
 											type="text"
 											name="user-city"
 											v-model="address.city"
-											class="px-4 py-2 border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 border rounded-md border-slate-400"
+											:rules="validateCity"
 										/>
 										<p v-else class="px-4 py-2">
 											{{ address.city }}
 										</p>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											role="alert"
+											name="user-city"
+										/>
 									</div>
 
 									<div class="grid grid-cols-2">
@@ -146,11 +164,13 @@
 											>Pais</label
 										>
 
-										<select
+										<Field
 											v-if="isEditing[index]"
 											name="user-country"
 											v-model="address.countries_id"
-											class="px-4 py-2 bg-white border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 bg-white border rounded-md border-slate-400"
+											:rules="validatePostalCode"
+											as="select"
 											v-on:change="
 												onCountrySelectUpdated(
 													index,
@@ -173,11 +193,16 @@
 											>
 												{{ country.name }}
 											</option>
-										</select>
+										</Field>
 
 										<p v-else class="px-4 py-2">
 											{{ countryNames[index] }}
 										</p>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											role="alert"
+											name="user-country"
+										/>
 									</div>
 
 									<div class="grid grid-cols-2">
@@ -187,11 +212,13 @@
 											>Departamento</label
 										>
 
-										<select
+										<Field
 											v-if="isEditing[index]"
 											name="user-state"
 											v-model="address.states_id"
-											class="px-4 py-2 bg-white border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 bg-white border rounded-md border-slate-400"
+											:rules="validatePostalCode"
+											as="select"
 										>
 											<option
 												v-for="(state, index) in states[
@@ -208,22 +235,28 @@
 											>
 												{{ state.name }}
 											</option>
-										</select>
+										</Field>
 
 										<p v-else class="px-4 py-2">
 											{{ address.states_id }}
 										</p>
+
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											role="alert"
+											name="user-state"
+										/>
 									</div>
 
 									<div class="flex justify-end">
 										<button
 											v-if="isEditing[index]"
-											class="px-2 py-1 text-white bg-indigo-500 rounded-md shadow-md w-fit hover:bg-indigo-600"
+											class="h-10 px-2 py-1 text-white bg-indigo-500 rounded-md shadow-md w-fit hover:bg-indigo-600"
 										>
 											Enviar
 										</button>
 									</div>
-								</form>
+								</Form>
 							</div>
 						</div>
 					</div>
@@ -245,9 +278,14 @@ import {
 
 import Spinner from "../components/Spinner.vue";
 
+import { Field, Form, ErrorMessage } from "vee-validate";
+
 export default {
 	components: {
 		Spinner,
+		Field,
+		Form,
+		ErrorMessage,
 	},
 
 	data() {
@@ -278,6 +316,53 @@ export default {
 	},
 
 	methods: {
+		validateCity(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			// if the field is not a valid city name
+			// acepta valores alfabeticos normales y especiales,
+			// para aquellos paises con tilde u otros caracteres
+			const regex =
+				/^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
+			if (!regex.test(value)) {
+				return "Este no es un nombre de pais valido";
+			}
+
+			if (!(value.length >= 2)) {
+				return "Este campo debe tener por lo menos 3 caracteres";
+			}
+
+			// All is good
+			return true;
+		},
+
+		validatePostalCode(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			// All is good
+			return true;
+		},
+
+		validateAddress(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			if (!(value.length >= 3)) {
+				return "Este campo debe tener por lo menos 3 caracteres";
+			}
+
+			// All is good
+			return true;
+		},
+
 		async initData() {
 			this.profileData = await getUserData(this.token);
 			this.addresses = await getAddresses(this.token);
@@ -292,8 +377,6 @@ export default {
 
 			this.addresses.map((address, index) => {
 				this.getAllCountryNameById(address.countries_id);
-				this.getAllStateNameById(index, address.states_id);
-
 				this.isEditing[index] = false;
 			});
 		},
@@ -316,16 +399,8 @@ export default {
 			this.states[index] = state;
 		},
 
-		async getAllStateNameById(index, id) {
-			console.log(id);
-			console.log(index);
-			console.log(this.states[0]);
-		},
-
-		async sendAddress(e, address) {
+		async sendAddress(address) {
 			this.loading = true;
-			e.preventDefault();
-
 			const body = {
 				address: address.address,
 				zipcode: address.zipcode,

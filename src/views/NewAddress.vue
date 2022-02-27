@@ -30,10 +30,10 @@
 						</div>
 						<div id="user-addresses" class="mt-2 text-gray-700">
 							<div>
-								<form
+								<Form
 									id="form-new-address"
-									v-on:submit="sendAddress"
 									class="grid gap-2 p-2 text-sm rounded-md bg-gray-50 md:grid-cols-2"
+									@submit="sendAddress"
 								>
 									<div class="grid grid-cols-2">
 										<label
@@ -41,13 +41,17 @@
 											class="px-4 py-2 font-semibold"
 											>Dirección</label
 										>
-										<input
+										<Field
 											name="user-address"
 											id="user-address"
 											type="text"
-											class="px-4 py-2 border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 border rounded-md border-slate-400"
 											v-model="addressData.address"
-											required
+											:rules="validateAddress"
+										/>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											name="user-address"
 										/>
 									</div>
 									<div class="grid grid-cols-2">
@@ -56,13 +60,17 @@
 											class="px-4 py-2 font-semibold"
 											>Código postal</label
 										>
-										<input
+										<Field
 											name="user-zipcode"
 											id="user-zipcode"
 											type="text"
-											class="px-4 py-2 border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 border rounded-md border-slate-400"
 											v-model="addressData.zipcode"
-											required
+											:rules="validatePostalCode"
+										/>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											name="user-zipcode"
 										/>
 									</div>
 									<div class="grid grid-cols-2">
@@ -71,13 +79,17 @@
 											class="px-4 py-2 font-semibold"
 											>Ciudad</label
 										>
-										<input
+										<Field
 											name="user-city"
 											id="user-city"
 											type="text"
-											class="px-4 py-2 border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 border rounded-md border-slate-400"
 											v-model="addressData.city"
-											required
+											:rules="validateCity"
+										/>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											name="user-city"
 										/>
 									</div>
 									<div class="grid grid-cols-2">
@@ -87,13 +99,14 @@
 											>Pais</label
 										>
 
-										<select
+										<Field
 											name="user-country"
 											id="user-country"
-											class="px-4 py-2 bg-white border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 bg-white border rounded-md border-slate-400"
 											v-model="addressData.countries_id"
 											v-on:change="onCountrySelectUpdated"
-											required
+											as="select"
+											:rules="validatePostalCode"
 										>
 											<option
 												v-for="(
@@ -104,7 +117,11 @@
 											>
 												{{ country.name }}
 											</option>
-										</select>
+										</Field>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											name="user-country"
+										/>
 									</div>
 									<div class="grid grid-cols-2">
 										<label
@@ -113,12 +130,13 @@
 											>Departamento</label
 										>
 
-										<select
+										<Field
 											name="user-state"
 											id="user-state"
-											class="px-4 py-2 bg-white border rounded-md border-slate-400"
+											class="h-10 px-4 py-2 bg-white border rounded-md border-slate-400"
 											v-model="addressData.states_id"
-											required
+											as="select"
+											:rules="validatePostalCode"
 										>
 											<option
 												v-for="(state, index) in states"
@@ -127,17 +145,21 @@
 											>
 												{{ state.name }}
 											</option>
-										</select>
+										</Field>
+										<ErrorMessage
+											class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+											name="user-state"
+										/>
 									</div>
 									<div class="flex justify-end">
 										<button
 											type="submit"
-											class="px-2 py-1 text-white bg-indigo-500 rounded-md shadow-md w-fit hover:bg-indigo-600"
+											class="h-10 px-2 py-1 text-white bg-indigo-500 rounded-md shadow-md w-fit hover:bg-indigo-600"
 										>
 											Enviar
 										</button>
 									</div>
-								</form>
+								</Form>
 							</div>
 						</div>
 					</div>
@@ -153,6 +175,8 @@ import {
 	getStates,
 	storeAddress,
 } from "../services/address.services";
+
+import { Field, Form, ErrorMessage } from "vee-validate";
 
 import Spinner from "../components/Spinner.vue";
 
@@ -177,6 +201,9 @@ export default {
 
 	components: {
 		Spinner,
+		Field,
+		Form,
+		ErrorMessage,
 	},
 
 	async mounted() {
@@ -184,6 +211,53 @@ export default {
 	},
 
 	methods: {
+		validateCity(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			// if the field is not a valid city name
+			// acepta valores alfabeticos normales y especiales,
+			// para aquellos paises con tilde u otros caracteres
+			const regex =
+				/^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
+			if (!regex.test(value)) {
+				return "Este no es un nombre de pais valido";
+			}
+
+			if (!(value.length >= 2)) {
+				return "Este campo debe tener por lo menos 3 caracteres";
+			}
+
+			// All is good
+			return true;
+		},
+
+		validatePostalCode(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			// All is good
+			return true;
+		},
+
+		validateAddress(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			if (!(value.length >= 3)) {
+				return "Este campo debe tener por lo menos 3 caracteres";
+			}
+
+			// All is good
+			return true;
+		},
+
 		async initData() {
 			this.countries = await getCountries(this.token);
 		},
@@ -196,8 +270,7 @@ export default {
 			this.states = state;
 		},
 
-		async sendAddress(e) {
-			e.preventDefault();
+		async sendAddress() {
 			this.loading = true;
 			const body = {
 				address: this.addressData.address,

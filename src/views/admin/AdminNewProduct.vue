@@ -8,7 +8,7 @@
 			<h1 class="mb-4 text-5xl font-bold">Nuevo producto</h1>
 			<div class="w-full mb-6 bg-slate-300" style="height: 1px"></div>
 
-			<form v-on:submit="sendData" id="product-form">
+			<Form @submit="sendData" id="product-form">
 				<div class="shadow sm:rounded-md sm:overflow-hidden">
 					<div class="px-4 py-5 space-y-6 bg-white sm:p-6">
 						<div class="grid grid-cols-3 gap-6">
@@ -19,14 +19,18 @@
 										class="block text-sm font-medium text-gray-700"
 										>Nombre del producto</label
 									>
-									<input
+									<Field
 										type="text"
 										name="product-name"
 										id="product-name"
 										placeholder="Nombre del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 										v-model="newProduct.name"
-										required
+										:rules="validateProductName"
+									/>
+									<ErrorMessage
+										name="product-name"
+										class="relative block px-2 py-1 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
 									/>
 								</div>
 							</div>
@@ -37,14 +41,18 @@
 										class="block text-sm font-medium text-gray-700"
 										>Precio del producto</label
 									>
-									<input
+									<Field
 										type="number"
 										name="product-price"
 										id="product-price"
 										placeholder="Precio del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 										v-model="newProduct.price"
-										required
+										:rules="validateNumber"
+									/>
+									<ErrorMessage
+										name="product-price"
+										class="relative block px-2 py-1 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
 									/>
 								</div>
 							</div>
@@ -55,14 +63,18 @@
 										class="block text-sm font-medium text-gray-700"
 										>Peso del producto</label
 									>
-									<input
+									<Field
 										type="number"
 										name="product-weight"
 										id="product-weight"
 										placeholder="Peso del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 										v-model="newProduct.weight"
-										required
+										:rules="validateNumber"
+									/>
+									<ErrorMessage
+										name="product-weight"
+										class="relative block px-2 py-1 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
 									/>
 								</div>
 							</div>
@@ -73,14 +85,18 @@
 										class="block text-sm font-medium text-gray-700"
 										>Stock disponible del producto</label
 									>
-									<input
+									<Field
 										type="number"
 										name="product-stock"
 										id="product-stock"
 										placeholder="Stock disponible del producto"
 										class="block w-full px-2 py-1 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 										v-model="newProduct.stock"
-										required
+										:rules="validateNumber"
+									/>
+									<ErrorMessage
+										name="product-stock"
+										class="relative block px-2 py-1 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
 									/>
 								</div>
 							</div>
@@ -94,16 +110,21 @@
 								Descripción
 							</label>
 							<div class="mt-1">
-								<textarea
+								<Field
 									id="product-description"
 									name="product-description"
 									rows="3"
 									class="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 									placeholder="Este es le mejor producto del mundo"
 									v-model="newProduct.description"
-									required
-								></textarea>
+									:rules="validateProductName"
+									as="textarea"
+								></Field>
 							</div>
+							<ErrorMessage
+								name="product-description"
+								class="relative block px-2 py-1 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+							/>
 						</div>
 
 						<div>
@@ -213,7 +234,7 @@
 						</button>
 					</div>
 				</div>
-			</form>
+			</Form>
 		</div>
 	</div>
 </template>
@@ -221,6 +242,8 @@
 import Spinner from "../../components/Spinner.vue";
 import { storeProduct } from "../../services/products.services";
 import { API_URL } from "../../config/config";
+
+import { Field, Form, ErrorMessage } from "vee-validate";
 
 export default {
 	data() {
@@ -242,9 +265,40 @@ export default {
 
 	components: {
 		Spinner,
+		Field,
+		Form,
+		ErrorMessage,
 	},
 
 	methods: {
+		validateNumber(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			const regex = /^\d+$/;
+
+			if (!regex.test(value)) {
+				return "Este campo solo puede contener números";
+			}
+			// All is good
+			return true;
+		},
+
+		validateProductName(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			if (!(value.length >= 8)) {
+				return "Este campo debe tener por lo menos 8 caracteres";
+			}
+			// All is good
+			return true;
+		},
+
 		onImagesChange: function (e) {
 			const images = [];
 
@@ -263,8 +317,7 @@ export default {
 				thumbnail: e.target.files[0],
 			};
 		},
-		sendData: async function (e) {
-			e.preventDefault();
+		sendData: async function () {
 			this.loading = true;
 			const res = await storeProduct(this.newProduct, this.token);
 

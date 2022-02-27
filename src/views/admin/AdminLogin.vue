@@ -26,37 +26,44 @@
 					Admin panel
 				</h2>
 			</div>
-			<form
+			<Form
 				class="mt-8 space-y-6"
 				id="form"
 				method="POST"
-				v-bind:onsubmit="onLogin"
+				@submit="onLogin"
 			>
 				<input type="hidden" name="remember" value="true" />
 				<div class="-space-y-px rounded-md shadow-sm">
-					<div>
+					<div class="mb-4">
 						<label for="user" class="sr-only">Email address</label>
-						<input
+						<Field
 							id="user"
 							name="user"
 							type="text"
 							v-model="user.name"
-							required
-							class="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							class="w-full px-3 py-3 pt-5 pb-2 mb-4 border border-gray-400 rounded appearance-none input focus focus:border-indigo-600 focus:outline-none active:outline-none active:border-indigo-600"
 							placeholder="Admin user"
+							:rules="validateUserNameAndPassword"
+						/>
+						<ErrorMessage
+							name="user"
+							class="relative px-4 py-3 my-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
 						/>
 					</div>
-					<div>
+					<div class="relative">
 						<label for="password" class="sr-only">Password</label>
-						<input
+						<Field
 							id="password"
 							name="password"
 							type="password"
 							v-model="user.password"
-							autocomplete="current-password"
-							required
-							class="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+							class="w-full px-3 py-3 pt-5 pb-2 mb-4 border border-gray-400 rounded appearance-none input focus focus:border-indigo-600 focus:outline-none active:outline-none active:border-indigo-600"
 							placeholder="Password"
+							:rules="validateUserNameAndPassword"
+						/>
+						<ErrorMessage
+							name="password"
+							class="relative px-4 py-3 my-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
 						/>
 					</div>
 				</div>
@@ -86,7 +93,7 @@
 						Sign in
 					</button>
 				</div>
-			</form>
+			</Form>
 		</div>
 	</div>
 </template>
@@ -94,6 +101,8 @@
 <script>
 import { login } from "../../services/auth.services";
 import Spinner from "../../components/Spinner.vue";
+
+import { Field, Form, ErrorMessage } from "vee-validate";
 
 export default {
 	data() {
@@ -108,6 +117,9 @@ export default {
 
 	components: {
 		Spinner,
+		Field,
+		Form,
+		ErrorMessage,
 	},
 
 	beforeCreate() {
@@ -118,8 +130,26 @@ export default {
 	},
 
 	methods: {
-		async onLogin(e) {
-			e.preventDefault();
+		validateUserNameAndPassword(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			if (!(value.length >= 8)) {
+				return "Este campo debe tener por lo menos 8 caracteres";
+			}
+
+			// if the field is not a valid username
+			const regex = /^[a-zA-Z0-9_]*$/;
+			if (!regex.test(value)) {
+				return "Este campo solo puede contener letras, numeros y barras bajas";
+			}
+			// All is good
+			return true;
+		},
+
+		async onLogin() {
 			this.loading = true;
 			const token = await login(this.user);
 

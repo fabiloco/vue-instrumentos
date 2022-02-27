@@ -4,11 +4,11 @@
 		style="background-color: #f7f4f2"
 	>
 		<Spinner v-if="loading" />
-		<form
+		<Form
 			v-else
-			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl fade-in-bottom"
+			class="flex flex-col max-w-xl p-10 bg-white rounded shadow-xl fade-in-bottom w-96"
 			id="login-form"
-			v-bind:onsubmit="onLogin"
+			@submit="onLogin"
 		>
 			<h1 class="mb-4 text-4xl font-black">Bienvenido!</h1>
 			<div class="relative flex flex-col mb-4">
@@ -17,14 +17,18 @@
 					class="pt-4 mt-2 mb-0 text-base text-gray-400 label leading-tighter cursor-text"
 					>Usuario</label
 				>
-				<input
+				<Field
 					class="w-full px-3 py-3 pt-5 pb-2 border border-gray-400 rounded appearance-none input focus focus:border-indigo-600 focus:outline-none active:outline-none active:border-indigo-600"
 					id="name"
 					name="name"
 					type="text"
-					autofocus
 					v-model="user.name"
-					required
+					:rules="validateUserNameAndPassword"
+				/>
+				<ErrorMessage
+					class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+					role="alert"
+					name="name"
 				/>
 			</div>
 			<div class="relative flex flex-col mb-2">
@@ -33,13 +37,18 @@
 					class="pt-4 mt-2 mb-0 text-base text-gray-400 label leading-tighter cursor-text"
 					>Contraseña</label
 				>
-				<input
+				<Field
 					class="w-full px-3 py-3 pt-5 pb-2 border border-gray-400 rounded appearance-none input focus focus:border-indigo-600 focus:outline-none active:outline-none active:border-indigo-600"
 					id="password"
 					name="password"
 					type="password"
 					v-model="user.password"
-					required
+					:rules="validateUserNameAndPassword"
+				/>
+				<ErrorMessage
+					class="relative px-4 py-3 mt-2 text-sm text-red-700 bg-red-100 border border-red-400 rounded scale-in-center"
+					role="alert"
+					name="password"
 				/>
 			</div>
 			<span
@@ -57,12 +66,14 @@
 			>
 				Iniciar sesión
 			</button>
-		</form>
+		</Form>
 	</article>
 </template>
 <script>
 import { login } from "../services/auth.services";
 import Spinner from "../components/Spinner.vue";
+
+import { Field, Form, ErrorMessage } from "vee-validate";
 
 export default {
 	data() {
@@ -77,6 +88,9 @@ export default {
 
 	components: {
 		Spinner,
+		Field,
+		Form,
+		ErrorMessage,
 	},
 
 	beforeCreate() {
@@ -87,11 +101,28 @@ export default {
 	},
 
 	methods: {
-		async onLogin(e) {
-			e.preventDefault();
+		validateUserNameAndPassword(value) {
+			// if the field is empty
+			if (!value) {
+				return "Este campo es requerido";
+			}
+
+			if (!(value.length >= 8)) {
+				return "Este campo debe tener por lo menos 8 caracteres";
+			}
+
+			// if the field is not a valid username
+			const regex = /^[a-zA-Z0-9_]*$/;
+			if (!regex.test(value)) {
+				return "Este campo solo puede contener letras, numeros y barras bajas";
+			}
+			// All is good
+			return true;
+		},
+
+		async onLogin() {
 			this.loading = true;
 			const token = await login(this.user);
-
 			if (token) {
 				window.sessionStorage.setItem("userToken", token);
 				window.location.href = "/profile";
